@@ -93,6 +93,11 @@ const App = () => {
 
     const total = option === "one-plate" ? quantity * 7 : quantity * 32;
 
+    if (total > 500) {
+      alert("Sorry, we cannot process orders over £500");
+      return;
+    }
+
     const fullname = name.split(" ").join("_");
 
     const url = `https://monzo.me/davidobidu/${total}.00?d=DONT%20EDIT%20THIS____JRICE%20order%20from%20${fullname}%20${phone}`;
