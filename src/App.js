@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ChakraProvider, Box, Button } from "@chakra-ui/react";
 import Form from "@rjsf/core";
 import validator from "@rjsf/validator-ajv8";
@@ -7,6 +7,14 @@ import "./App.css";
 const TOKEN = process.env.REACT_APP_AIRTABLE_TOKEN;
 
 const App = () => {
+  const [marketer, setMarketer] = React.useState(null);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const marketer = urlParams.get("m");
+    if (marketer) setMarketer(marketer);
+  }, []);
+
   const schema = {
     title: "",
     type: "object",
@@ -102,7 +110,7 @@ const App = () => {
 
     const url = `https://monzo.me/davidobidu/${total}.00?d=DONT%20EDIT%20THIS____JRICE%20order%20from%20${fullname}%20${phone}`;
 
-    const isSuccessful = await addData({
+    const tableData = {
       "Payment Status": "Pending",
       "Delivery Status": "Pending",
       Name: name,
@@ -110,9 +118,13 @@ const App = () => {
       Pickup: pickup,
       Quantity: quantity,
       Option: option,
-      Date: new Date().toISOString().split("T")[0],
+      Date: new Date().toISOString(),
       Total: total,
-    });
+    };
+
+    if (marketer) tableData["Marketer"] = marketer;
+
+    const isSuccessful = await addData(tableData);
 
     if (isSuccessful) window.open(url, "_blank");
     else
